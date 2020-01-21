@@ -1,0 +1,64 @@
+{{define "content"}}
+<main role="main" class="main-content px-5 mb-5">
+  <!-- Breadcrumb -->
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb custom-title mt-3">
+      <li class="breadcrumb-item"><a href="/admin">Home</a></li>
+      <li class="breadcrumb-item"><a href="/admin/teams">Teams</a></li>
+      <li class="breadcrumb-item active" aria-current="page">Team Detail</li>
+    </ol>
+  </nav>
+
+  <div class="offset-sm-2">
+    <!-- Team's icon -->
+    <div class="row">
+      <div class="offset-sm-3">
+        {{if not .team.PictureURL.String}}
+        <img src="/webroot/img/team_default.png" class="avatar mb-2 ml-3 mt-5" alt="team's icon">
+        {{else}}
+          {{if .useS3}}
+          <img src="{{.team.PictureURL.String}}" class="avatar mb-2 ml-3 mt-5" alt="team's icon">
+          {{else}}
+          <img src="/{{.team.PictureURL.String}}" class="avatar mb-2 ml-3 mt-5" alt="team's icon">
+          {{end}}
+        {{end}}
+      </div>
+    </div>
+    <div class="offset-sm-3 col-sm-6 mb-5"></div>
+    <!-- name -->
+    <div class="row mb-3">
+      <label class="col-sm-3 col-form-label">Team Name</label>
+      <div class="col-sm-6">
+        <a>{{.team.Name}}</a>
+      </div>
+    </div>
+    <!-- leader -->
+    <div class="row mb-3">
+      <label class="col-sm-3 col-form-label">Team leader</label>
+      <div class="col-sm-6">
+        {{ if .leader }}
+          <a>{{.leader.Leader}}</a>
+        {{else}}
+          <a>_</a>
+        {{end}}
+      </div>
+    </div>
+    <!-- description -->
+    <div class="row mb-3">
+      <label class="col-sm-3 col-form-label">Description</label>
+      <div class="col-sm-6">
+        <textarea class="form-control custom-input" rows="10" readonly>{{.team.Description.String}}</textarea>
+      </div>
+    </div>
+    <!-- buttons -->
+    <div class="form-group row mt-5">
+      <div class="col-sm-2 offset-sm-2">
+        <a class="btn btn-big btn-normal" href="/admin/teams">Back</a>
+      </div>
+      <div class="col-sm-2 offset-sm-2">
+        <a class="btn btn-big btn-normal" href="/admin/teams/{{.team.ID}}/edit">Edit</a>
+      </div>
+    </div>
+  </div>
+</main>
+{{end}}

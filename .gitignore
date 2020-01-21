@@ -1,0 +1,5 @@
+/vendor
+/mysql/data
+.DS_Store
+.editorconfig
+/webroot/img

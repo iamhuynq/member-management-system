@@ -1,0 +1,94 @@
+{{define "content"}}
+<main role="main" class="main-content px-5 mb-5">
+  <!-- Breadcrumb -->
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb custom-title mt-3">
+      <li class="breadcrumb-item"><a href="/admin">Home</a></li>
+      <li class="breadcrumb-item"><a href="/admin/seats">Seats</a></li>
+      <li class="breadcrumb-item active" aria-current="page">Seat Detail</li>
+    </ol>
+  </nav>
+  <!-- Delete button -->
+  <div class="d-flex justify-content-end">
+    <div class="btn-toolbar">
+      <a class="btn btn-normal btn-delete mt-0" href="/admin/seats/{{.seatMaster.ID}}/delete" data-toggle="modal"
+        data-target="#deleteModal">
+        Detele
+      </a>
+    </div>
+    <div class="col-md-1"></div>
+  </div>
+
+  <div class="pl-3">
+    <div id="check_page" data-id="{{.seatMaster.ID}}" data-page="detail"></div>
+    <!-- Title -->
+    <div class="row mb-3">
+      <label class="col-sm-3 col-form-label">Title</label>
+      <div class="col-sm-6">
+        <a>{{.seatMaster.Title}}</a>
+      </div>
+    </div>
+    <!-- Company -->
+    <div class="row mb-3">
+      <label class="col-sm-3 col-form-label">Company</label>
+      <div class="col-sm-6">
+        <a>{{.company}}</a>
+      </div>
+    </div>
+    <!-- Status -->
+    <div class="row mb-3">
+      <label class="col-sm-3 col-form-label">Status</label>
+      <div class="col-sm-6">
+        <a>
+          {{if .seatMaster.Status}}
+          Active
+          {{else}}
+          Inactive
+          {{end}}
+        </a>
+      </div>
+    </div>
+    <!-- Room design -->
+    <div id="outside_room_design" class="outside_show">
+      <div id="room_design">
+      </div>
+    </div>
+    <!-- buttons -->
+    <div class="offset-sm-2 form-group row mt-5">
+      <div class="col-sm-2 offset-sm-2">
+        <a class="btn btn-big btn-normal" href="/admin/seats">Back</a>
+      </div>
+      <div class="col-sm-2 offset-sm-2">
+        <a class="btn btn-big btn-normal" href="/admin/seats/{{.seatMaster.ID}}/edit">Edit</a>
+      </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="delete_modal_label"
+      aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content custom-modal">
+          <div class="modal-header modal-warning">
+            <h6 class="modal-title" id="delete_modal_label">Are you sure want to delete Seat Master {{.seatMaster.Title}}?</h6>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body pt-5">
+            <div class="row">
+              <div class="col-sm-6">
+                <button type="button" class="btn btn-normal btn-modal m-auto" data-dismiss="modal">Cancel</button>
+              </div>
+              <div class="col-sm-6">
+                <form action="/admin/seats/{{.seatMaster.ID}}/delete" method="POST">
+                  <button class="btn btn-normal btn-modal m-auto" type="submit" formmethod="POST">OK</button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+{{end}}

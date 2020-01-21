@@ -1,0 +1,163 @@
+{{define "content"}}
+<main role="main" class="main-content px-5 mb-5">
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb custom-title mt-3">
+      <li class="breadcrumb-item"><a href="/">Home</a></li>
+      <li class="breadcrumb-item active" aria-current="page">My Page</li>
+    </ol>
+  </nav>
+  <div class="ml-5">
+
+    <!-- Avatar display -->
+    <div class="row">
+      <div class="offset-sm-3">
+        {{if not .member.PictureURL.String}}
+        <img id="avatar" class="avatar mb-2 ml-3 mt-5" src="/webroot/img/avatar_empty.png" alt="member avatar">
+        {{else}}
+          {{if .useS3}}
+          <img id="avatar" class="avatar mb-2 ml-3 mt-5" src="{{.member.PictureURL.String}}" alt="member avatar">
+          {{else}}
+          <img id="avatar" class="avatar mb-2 ml-3 mt-5" src="/{{.member.PictureURL.String}}" alt="member avatar">
+          {{end}}
+        {{end}}
+      </div>
+      <div class="d-flex flex-column justify-content-end ml-3">
+        <button type="button" id="upload" class="btn btn-normal mb-2">Upload</button>
+        <button type="button" id="delete-avatar" class="btn btn-normal btn-delete mb-2">Delete</button>
+      </div>
+    </div>
+    <div class="offset-sm-3 col-sm-6 mb-5">
+      {{if .validateError.photo}}
+      <div class="invalid-feedback photo-feedback">
+        {{.validateError.photo}}
+      </div>
+      {{end}}
+    </div>
+
+    <form enctype="multipart/form-data" action="my_page" method="POST">
+
+      <!-- Avatar input -->
+      <input type="file" id="file" name="myFile" class="d-none"/>
+      <input type="text" name="check" value="1" id="check-avt" class="d-none"/>
+
+      <!-- name -->
+      <div class="form-group row">
+        <label class="col-sm-3 col-form-label">Name <span class="require">*</span></label>
+        <div class="col-sm-6">
+          <input type="text" name="name" class="form-control custom-input {{if .validateError.name}} is-invalid {{end}}" placeholder="Name" value="{{.member.Name}}">
+          {{if .validateError.name}}
+          <div class="invalid-feedback">
+            {{.validateError.name}}
+          </div>
+          {{end}}
+        </div>
+      </div>
+
+      <!-- birthday -->
+      <div class="form-group row">
+        <label class="col-sm-3 col-form-label">BirthDay</label>
+        <div class="col-sm-6">
+          <input name="birthday" class="form-control custom-input" data-toggle="datepicker" placeholder="mm-dd-yyyy" autocomplete="off"
+          {{if .member.Birthday.Valid}} value='{{.member.Birthday.Time.Format "01-02-2006"}}' {{end}}>
+        </div>
+      </div>
+
+      <!-- login pass -->
+      <div class="form-group row">
+        <label class="col-sm-3 col-form-label">Password</label>
+        <div class="col-sm-6">
+          <a class="btn btn-normal" href="/members/change_password">Change Password</a>
+        </div>
+      </div>
+
+      <!-- gender -->
+      <div class="form-group row">
+        <label class="col-sm-3 col-form-label">Gender Type</label>
+        <div class="col-sm-6">
+          <div class="form-check">
+            <input class="form-check-input" type="radio" name="gender" value="1" {{if eq .member.GenderType 1}} checked
+              {{end}}>
+            <label class="form-check-label">
+              Male
+            </label>
+          </div>
+          <div class="form-check">
+            <input class="form-check-input" type="radio" name="gender" value="2" {{if eq .member.GenderType 2}} checked
+              {{end}}>
+            <label class="form-check-label">
+              Female
+            </label>
+          </div>
+          <div class="form-check">
+            <input class="form-check-input" type="radio" name="gender" value="3" {{if eq .member.GenderType 3}} checked
+              {{end}}>
+            <label class="form-check-label">
+              Other
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- github -->
+      <div class="form-group row">
+        <label class="col-sm-3 col-form-label">Github</label>
+        <div class="col-sm-6">
+          {{if .newSNSAccount}}
+          <input type="text" name="githubAccount" class="form-control custom-input" value="{{.newSNSAccount}}">
+          {{else}}
+          <input type="text" name="githubAccount" class="form-control custom-input" value="{{.SNSAccount.Github}}">
+          {{end}}
+        </div>
+      </div>
+
+      <!-- comment -->
+      <div class="form-group row">
+        <label class="col-sm-3 col-form-label">Comment</label>
+        <div class="col-sm-6">
+          <textarea name="comment" class="form-control custom-input {{if .validateError.comment}} is-invalid {{end}}" rows="10">{{.member.Comment.String}}</textarea>
+          {{if .validateError.comment}}
+          <div class="invalid-feedback">
+            {{.validateError.comment}}
+          </div>
+          {{end}}
+        </div>
+      </div>
+
+      <!-- Buttons -->
+      <div class="form-group row mt-5">
+        <div class="col-sm-2 offset-sm-2">
+          <div class="btn btn-big btn-normal" data-toggle="modal" data-target="#back_modal">Back</div>
+        </div>
+        <div class="col-sm-2 offset-sm-2">
+          <button name="save" type="submit" class="btn btn-big btn-normal">Save</button>
+        </div>
+      </div>
+
+      <!-- Modal -->
+      <div class="modal fade" id="back_modal" tabindex="-1" role="dialog" aria-labelledby="back_modal_label"
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content custom-modal">
+            <div class="modal-header modal-warning">
+              <h6 class="modal-title" id="back_modal_label">Are you sure you want to clear the input information?</h6>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body pt-5">
+              <div class="row">
+                <div class="col-sm-6">
+                  <button type="button" class="btn btn-normal btn-modal m-auto" data-dismiss="modal">Cancel</button>
+                </div>
+                <div class="col-sm-6">
+                  <a class="btn btn-normal btn-modal m-auto" href="/">OK</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+</main>
+{{end}}

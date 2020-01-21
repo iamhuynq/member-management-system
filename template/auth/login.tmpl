@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Login</title>
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css">
+  <link rel="stylesheet" href="/webroot/css/default.css">
+<head>
+
+</head>
+
+<body>
+  <div class="card form-login">
+    <div class="card-body">
+      <form action="/login" method="POST">
+        <div class="form-login-header">
+          <h3 class="title">Vista</h3>
+        </div>
+        <div class="form-group md-form">
+          <i class="fas fa-user prefix"></i>
+          <input type="text" class="form-control {{if .loginError}} is-invalid {{end}}" id="inputLoginName" name="loginID" value="{{.loginID}}">
+          <label for="inputLoginName">Username</label>
+        </div>
+        <div class="form-group md-form">
+          <i class="fas fa-lock prefix"></i>
+          <input type="password" class="form-control {{if .loginError}} is-invalid {{end}}" id="inputLoginPass" name="password">
+          <label for="inputLoginPass">Password</label>
+        </div>
+        {{if .loginError}}
+          <p class="form-login-error">ID or Password is wrong, please try again !</p>
+        {{end}}
+        <div class="text-center">
+          <button class="btn btn-form-login" type="submit">Login</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
+  <script src="/webroot/js/login.js"></script>
+</body>
+
+</html>

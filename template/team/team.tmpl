@@ -1,0 +1,154 @@
+{{define "content"}}
+<div class="row mb-5">
+  <div class="m-sm-auto col-xl-10 px-4 mb-5">
+    <div class="row">
+      {{$use_S3 := .useS3}}
+      {{range .teamData}}
+      <div class="col-sm-3 team-members">
+        <!-- Team-name -->
+        <div class="team-name" data-id-teamname="{{.Team.ID}}">
+          {{.Team.Name}}
+        </div>
+        <div class="card team-card" id="content-team-{{.Team.ID}}">
+          <!-- Background color -->
+          <div class="card-up"></div>
+          <!-- Avatar -->
+          <div class="team-card-avatar mx-auto">
+            {{if not .Team.PictureURL.String}}
+            <img src="/webroot/img/team_default.png" alt="user_photo">
+            {{else}}
+              {{if $use_S3}}
+              <img src="{{.Team.PictureURL.String}}" alt="user_photo">
+              {{else}}
+              <img src="/{{.Team.PictureURL.String}}" alt="user_photo">
+              {{end}}
+            {{end}}
+          </div>
+          <!-- Content -->
+          <div class="card-body text-center">
+            <!-- Name -->
+            <h4 class="card-title">{{.Team.Name}}</h4>
+            <hr>
+            <!-- Quotation -->
+            <p><i class="fas fa-quote-left"></i> {{.Team.Description.String}}</p>
+          </div>
+        </div>
+        <!-- Members -->
+        <div class="box" data-id-team="{{.Team.ID}}">
+          {{range .Member}}
+          <div class="item" data-id-member={{.Member.ID}} data-toggle="modal" data-target="#modalTop{{.Member.ID}}">
+            {{if not .Member.PictureURL.String}}
+            <img class="member-avt" src="/webroot/img/avatar_empty.png" style="border: 1px solid {{.Company.Color}}"
+              alt="member avatar">
+            {{else}}
+              {{if $use_S3}}
+              <img class="member-avt" src="{{.Member.PictureURL.String}}" style="border: 1px solid {{.Company.Color}}">
+              {{else}}
+              <img class="member-avt" src="/{{.Member.PictureURL.String}}" style="border: 1px solid {{.Company.Color}}">
+              {{end}}
+            {{end}}
+            {{if .IsLeader}}<i class="fas fa-star"></i>{{end}}
+            <span data-toggle="tooltip" title="{{.Member.Name}}" href="" class="member-name"
+              style="background-color: {{.Company.Color}}">{{.Member.Name}}</span>
+          </div>
+          {{end}}
+        </div>
+        {{range .Member}}
+        <!-- The Modal -->
+        <div class="modal modalTop" id="modalTop{{.Member.ID}}">
+          <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+
+              <!-- Modal Header -->
+              <div class="modal-header">
+                <div class="col-md-12">
+                  <div class="row">
+                    <!-- avatar -->
+                    <div class="col-md-3">
+                      {{if not .Member.PictureURL.String}}
+                      <img src="/webroot/img/avatar_empty.png" alt="member avatar">
+                      {{else}}
+                        {{if $use_S3}}
+                        <img src="{{.Member.PictureURL.String}}" alt="member avatar">
+                        {{else}}
+                        <img src="/{{.Member.PictureURL.String}}" alt="member avatar">
+                        {{end}}
+                      {{end}}
+                    </div>
+                    <div class="col-md-9 pl-5">
+                      <!-- name -->
+                      <h4 class="name">{{.Member.Name}}</h4>
+                      <div class="info">
+                        <!-- birthday -->
+                        <div class="mb-2">
+                          <i class="fas fa-birthday-cake"></i>
+                          <span class="ml-3">
+                            {{if .Member.Birthday.Valid}}
+                            {{.Member.Birthday.Time.Format "01-02-2006"}}
+                            {{else}}
+                            -
+                            {{end}}
+                          </span>
+                        </div>
+                        <!-- gender -->
+                        <div class="mb-2">
+                          <i class="fas fa-venus-mars"></i>
+                          <span class="ml-3">
+                            {{if eq .Member.GenderType 1}} Male {{end}}
+                            {{if eq .Member.GenderType 2}} Female {{end}}
+                            {{if eq .Member.GenderType 3}} Other {{end}}
+                          </span>
+                        </div>
+                      </div>
+                      {{if .SNSAccount}}
+                      <a href="{{.SNSAccount}}" target="_blank" style="color: white"><i
+                          class="fab fa-github fa-lg"></i></a>
+                      {{else}}
+                      <i class="fab fa-github fa-lg" style="opacity: 0.3"></i>
+                      {{end}}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Modal body -->
+              <div class="modal-body">
+                <!-- company -->
+                <div class="row mb-4">
+                  <label class="col-sm-4 mr-2 pl-5">Company</label>
+                  <div class="col-sm-7">
+                    <b>{{.Company.Name}}</b>
+                  </div>
+                </div>
+                <!-- team -->
+                <div class="row mb-4">
+                  <label class="col-sm-4 mr-2 pl-5">Team</label>
+                  <div class="col-sm-7">
+                    {{range $key,$team := .Team}}
+                    <p class="team-name-modaltop"><b>{{$team}}</b></p>
+                    {{end}}
+                  </div>
+                </div>
+                <!-- comment -->
+                <div class="row mb-4">
+                  <label class="col-sm-4 mr-2 pl-5">Comment</label>
+                  <div class="col-sm-7">
+                    <textarea class="form-control" rows="4" readonly>{{.Member.Comment.String}}</textarea>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Modal footer -->
+              <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        {{end}}
+      </div>
+      {{end}}
+    </div>
+  </div>
+</div>
+{{end}}

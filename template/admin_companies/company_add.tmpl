@@ -1,0 +1,160 @@
+{{define "content"}}
+<main role="main" class="main-content px-5 mb-5">
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb custom-title mt-3">
+      <li class="breadcrumb-item"><a href="/admin">Home</a></li>
+      <li class="breadcrumb-item"><a href="/admin/companies">Companies</a></li>
+      <li class="breadcrumb-item active" aria-current="page">Add Company</li>
+    </ol>
+  </nav>
+  <form action="/admin/companies/add" method="POST">
+    <div class="offset-sm-2 long-height">
+      <div class="row my-5"></div>
+
+      <!-- name -->
+      <div class="form-group row">
+        <label class="col-sm-3 col-form-label">Name <span class="require">*</span></label>
+        <div class="col-sm-6">
+          <input type="text" class="form-control custom-input {{if .companyError.name}} is-invalid {{end}}"
+            name="companyName" value="{{.company.Name}}">
+          {{if .companyError.name}}
+          <div class="invalid-feedback">
+            {{.companyError.name}}
+          </div>
+          {{end}}
+        </div>
+      </div>
+
+      <!-- Company color -->
+      <div class="form-group row">
+        <label class="col-sm-3 col-form-label">Color <span class="require">*</span></label>
+        <div class="col-sm-6">
+          {{if .company}}
+          <input type="text"
+            class="form-control custom-input {{if .companyError.color}} is-invalid {{end}} jscolor {styleElement:'company-color', required:true, position:'right', hash:true}"
+            name="companyColor" value="{{.company.Color}}">
+          {{else}}
+          <input type="text"
+            class="form-control custom-input {{if .companyError.color}} is-invalid {{end}} jscolor {styleElement:'company-color', required:false, position:'right', hash:true}"
+            name="companyColor">
+          {{end}}
+          <div id="company-color" class="company-color-display"></div>
+          {{if .companyError.color}}
+          <div class="invalid-feedback">
+            {{.companyError.color}}
+          </div>
+          {{end}}
+        </div>
+      </div>
+
+      <!-- departments -->
+      <div class="form-group row">
+        <label class="col-sm-3 col-form-label">Departments <span class="require">*</span></label>
+        <div class="col-sm-6">
+          <table class="company-table table-department table-sm mb-3" border="1" id="department-table">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Color</th>
+                <th class="col-btn-delete"></th>
+              </tr>
+            </thead>
+            <tbody>
+              {{if .departmentList}}
+              {{range $index, $department := .departmentList}}
+              <tr id="department-row">
+                <td>
+                  <input type="text" name="departmentName" class="form-control custom-input"
+                    value="{{$department.Name}}">
+                </td>
+                <td>
+                  <div class="row w-100 m-0">
+                    <input type="text" name="departmentColor"
+                      class="form-control color-input custom-input jscolor {styleElement:'department-color-{{$index}}',required:true, hash:true}"
+                      value="{{$department.Color}}">
+                    <div class="show-color" id="department-color-{{$index}}"></div>
+                  </div>
+                </td>
+                <td class="col-btn-delete">
+                  <button class='btn btn-normal btn-delete btn-delete-department' onclick='removeDepartment($(this))'>
+                    <i class='fa fa-times'></i>
+                  </button>
+                </td>
+              </tr>
+              {{end}}
+              {{else}}
+              <tr id="department-row">
+                <td>
+                  <input type="text" name="departmentName" class="form-control custom-input">
+                </td>
+                <td>
+                  <div class="row w-100 m-0">
+                    <input type="text" name="departmentColor"
+                      class="form-control color-input custom-input jscolor {styleElement:'department-color', required:false, hash:true}">
+                    <div class="show-color" id="department-color"></div>
+                  </div>
+                </td>
+                <td class="col-btn-delete">
+                  <button class='btn btn-normal btn-delete btn-delete-department' onclick='removeDepartment($(this))'
+                    disabled>
+                    <i class='fa fa-times'></i>
+                  </button>
+                </td>
+              </tr>
+              {{end}}
+            </tbody>
+          </table>
+          <input class="d-none form-control {{if .departmentListError}} is-invalid {{end}}">
+          {{if .departmentListError}}
+          <div class="invalid-feedback">
+            {{range $errKey, $errDetail := .departmentListError}}
+            {{$errDetail}}<br>
+            {{end}}
+          </div>
+          {{end}}
+        </div>
+      </div>
+      <!-- Add department -->
+      <div class="offset-sm-3">
+        <div class="btn btn-normal btn-notice ml-2 mb-3" id="add-department"><i class="fa fa-plus"></i></div>
+      </div>
+
+
+    </div>
+    <!-- buttons -->
+    <div class="offset-sm-2 form-group row mt-5">
+      <div class="col-sm-2 offset-sm-2">
+        <div class="btn btn-big btn-normal" data-toggle="modal" data-target="#back_modal">Back</div>
+      </div>
+      <div class="col-sm-2 offset-sm-2">
+        <button name="save" type="submit" class="btn btn-big btn-normal">Save</button>
+      </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="back_modal" tabindex="-1" role="dialog" aria-labelledby="back_modal_label"
+      aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content custom-modal">
+          <div class="modal-header modal-warning">
+            <h6 class="modal-title" id="back_modal_label">Are you sure you want to clear the input information?</h6>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body pt-5">
+            <div class="row">
+              <div class="col-sm-6">
+                <button type="button" class="btn btn-normal btn-modal m-auto" data-dismiss="modal">Cancel</button>
+              </div>
+              <div class="col-sm-6">
+                <a class="btn btn-normal btn-modal m-auto" href="/admin/companies">OK</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+</main>
+{{end}}

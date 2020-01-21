@@ -1,0 +1,95 @@
+{{define "base"}}
+<!DOCTYPE html>
+<html>
+
+<head>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.9.0/css/all.css">
+  <!-- For seats -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-toast-plugin/1.3.2/jquery.toast.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-contextmenu/2.7.1/jquery.contextMenu.min.css">
+  <link rel="stylesheet" type="text/css" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.7.1/themes/base/jquery-ui.css">
+  <!-- end seats -->
+  <link rel="stylesheet" href="/webroot/css/default.css">
+  <link rel="stylesheet" href="/webroot/css/datepicker.css">
+  <title>{{.title}}</title>
+</head>
+
+<body>
+  <!-- header -->
+  <nav class="navbar navbar-expand-lg bg-light fixed-top" id="header">
+    <div class="navbar-brand brand">
+        <a class="nav-link" href="/">Vista</a>
+    </div>
+    <div class="collapse navbar-collapse" id="navbarNavDropdown">
+      <ul class="navbar-nav mr-auto">
+      </ul>
+      <ul class="navbar-nav header-menu">
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown"
+            aria-haspopup="true" aria-expanded="false">
+            <i class="fas fa-bars"></i>
+          </a>
+          <div class="dropdown-menu dropdown-menu-right bg-dropdown" aria-labelledby="navbarDropdownMenuLink">
+            {{if eq .auth.RoleType 2}}
+            <a class="dropdown-item" href="/admin">Admin</a>
+            {{end}}
+            <a class="dropdown-item" href="/my_page">My Page</a>
+            <a class="dropdown-item" href="/team">Team</a>
+            <a class="dropdown-item" href="/seat">Seat</a>
+            <div class="dropdown-divider"></div>
+            <a class="dropdown-item logout" href="/logout">Logout</a>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </nav>
+  <!-- side bar -->
+  <div class="wrapper">
+    <nav class="bg-sidebar" id="sidebar">
+      <div class="sidebar-sticky">
+        <ul class="nav flex-column">
+          <li class="nav-item">
+            <a class="nav-link sidebar-link {{if eq .tab 1}} current-active {{end}}" href="/admin/members"><i class="fas fa-user sidebar-icon"></i> Members</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link sidebar-link {{if eq .tab 2}} current-active {{end}}" href="/admin/teams"><i class="fas fa-users sidebar-icon"></i> Teams</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link sidebar-link {{if eq .tab 3}} current-active {{end}}" href="/admin/companies"><i class="fas fa-building sidebar-icon"></i> Companies</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link sidebar-link {{if eq .tab 4}} current-active {{end}}" href="/admin/seats"><i class="fas fa-chair sidebar-icon"></i> Seats</a>
+          </li>
+        </ul>
+      </div>
+    </nav>
+    <div class="close-icon">
+      <i id="collapse-icon" class="fas fa-angle-double-left"></i>
+    </div>
+    {{template "content" .}}
+  </div>
+  <!-- footer -->
+  <nav class="navbar navbar-light fixed-bottom flex-md-nowrap p-0 footer">
+    <a class="navbar-brand col-sm-3 col-md-2 mr-0" style="font-size:16px;">Copyright © Tribal Media House
+      Technology Lab Co., Ltd. All rights reserved</a>
+  </nav>
+</body>
+
+</html>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+<script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jscolor/2.0.4/jscolor.min.js"></script>
+<!-- For seats -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-contextmenu/2.7.1/jquery.contextMenu.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-contextmenu/2.7.1/jquery.ui.position.js"></script>
+<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-toast-plugin/1.3.2/jquery.toast.min.js"></script>
+<!-- end seats -->
+<script src="/webroot/js/default.js"></script>
+<script src="/webroot/js/datepicker.js"></script>
+<script src="/webroot/js/seats.js"></script>
+{{end}}

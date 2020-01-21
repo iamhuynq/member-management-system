@@ -1,0 +1,68 @@
+{{define "content"}}
+<main role="main" class="main-content px-5 mb-5">
+  <!-- Breadcrumb -->
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb custom-title mt-3 mb-0">
+      <li class="breadcrumb-item"><a href="/admin">Home</a></li>
+      <li class="breadcrumb-item active" aria-current="page">Members</li>
+    </ol>
+  </nav>
+  <!-- Create button -->
+  <div class="d-flex justify-content-end">
+    <div class="btn-toolbar">
+      <a class="btn btn-big btn-normal mt-0" href="/admin/members/add">
+        Create new member
+      </a>
+    </div>
+  </div>
+  <!-- Table -->
+  <div class="card custom-card card-table mt-3">
+    <div class="card-body">
+      <div class="table-responsive">
+        <table id="myTable" class="table list table-striped table-bordered">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Name</th>
+              <th>Role</th>
+              <th>Login ID</th>
+              <th>Company</th>
+              <th>Team</th>
+              <th>Status</th>
+              <th>Created</th>
+              <th>Modified</th>
+            </tr>
+          </thead>
+          <tbody>
+            {{range .list}}
+            <tr>
+              <td>{{.Member.ID}}</td>
+              <td><a href="/admin/members/{{.Member.ID}}">{{.Member.Name}}</a></td>
+              <td>
+                {{if eq .Member.RoleType 1}} normal {{end}}
+                {{if eq .Member.RoleType 2}} admin {{end}}
+              </td>
+              <td>{{.Member.LoginID}}</td>
+              <td>{{.Company}}</td>
+              <td>
+                {{range $key,$team := .Teams}}
+                {{$team}}
+                <br>
+                {{end}}
+              </td>
+              {{ if .Member.Status}}
+              <td align="center"><label class="badge badge-danger custom-badge mb-0 px-3">Out</label></td>
+              {{else}}
+              <td align="center"><label class="badge badge-success custom-badge mb-0 px-3">In</label></td>
+              {{end}}
+              <td>{{.Member.Created.Format "2006-01-02 15:04:05" }}</td>
+              <td>{{.Member.Modified.Format "2006-01-02 15:04:05" }}</td>
+            </tr>
+            {{end}}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</main>
+{{end}}

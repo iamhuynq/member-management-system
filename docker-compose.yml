@@ -1,0 +1,40 @@
+version: '3'
+services:
+  mysql:
+    image: mysql:5.7
+    hostname: mysql
+    container_name: vista_db
+    ports:
+      - "3306:3306"
+    volumes:
+      - "./mysql/init:/docker-entrypoint-initdb.d"
+      - "./mysql/data:/var/lib/mysql"
+    environment:
+      - MYSQL_DATABASE=vista
+      - MYSQL_ROOT_PASSWORD=vista
+      - "TZ=Asia/Ho_Chi_Minh"
+    command:
+      - mysqld
+  redis:
+    image: redis
+    container_name: vista_cache
+    ports:
+      - "6379:6379"
+  app:
+    links:
+      - mysql
+      - redis
+    build:
+      context: .
+      dockerfile: ./docker/golang/Dockerfile
+    container_name: vista_app
+    ports:
+      - "${PORT}:8080"
+    restart: always
+    volumes:
+      - ./:/go/src/github.com/tribalmedia/vista
+    env_file:
+      - connect.env
+    environment:
+      - "APP_MODE=${APP_MODE}"
+    command: go run .

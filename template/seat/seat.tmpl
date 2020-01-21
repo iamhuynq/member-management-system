@@ -1,0 +1,44 @@
+{{define "content"}}
+<div id="check_page" data-page="seat"></div>
+<div class="d-flex justify-content-end mt-2">
+  <button class="btn btn-big btn-normal" id="export_pdf">PDF OUTPUT</button>
+</div>
+<!-- Nav tabs -->
+<div class="mb-2" style="border-bottom: 2px solid;">
+  <ul class="nav nav-tabs seat-tabs" role="tablist">
+    {{range $key, $seatsList := .seatsList}}
+    <li class="nav-item">
+      <a class="nav-link {{if eq $key 0}} active {{end}}" data-toggle="tab" href="#seattab{{$key}}">{{$seatsList.SeatMaster.Title}}</a>
+    </li>
+    {{end}}
+  </ul>
+</div>
+
+<!-- Tab panes -->
+<div class="seattab-content tab-content">
+  {{range $key, $seatsList := .seatsList}}
+  <div id="seattab{{$key}}" class="tab-pane seattab seattab-{{$seatsList.SeatMaster.ID}} {{if eq $key 0}} active {{end}}" data-seatmaster-id="{{$seatsList.SeatMaster.ID}}">
+    <!-- Seat map -->
+    <div class="seatmap seattab{{$key}} mb-3"></div>
+    <!-- Departments -->
+    <div class="department d-flex flex-wrap mb-5">
+      {{range $value := .DepartmentsList}}
+      <div class="box-department" data-department-id={{$value.Departments.ID}} data-box="department" data-color-dp="{{$value.Departments.Color}}">
+        <!-- Department header -->
+        <div class="department-name" style="background-color: {{$value.Departments.Color}}">
+          {{$value.Departments.Name}}
+        </div>
+        {{range .Members}}
+        <!-- Members of department -->
+        <div class="child" style="background-color: {{$value.Departments.Color}}" data-toggle="tooltip" title="{{.Name}}"
+          data-color-seat="{{$value.Departments.Color}}" data-member-id="{{.ID}}">
+          {{.Name}}
+        </div>
+        {{end}}
+      </div>
+      {{end}}
+    </div>
+  </div>
+  {{end}}
+</div>
+{{end}}

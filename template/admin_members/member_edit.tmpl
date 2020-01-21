@@ -1,0 +1,276 @@
+{{define "content"}}
+<main role="main" class="main-content px-5 mb-5">
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb custom-title mt-3">
+      <li class="breadcrumb-item"><a href="/admin">Home</a></li>
+      <li class="breadcrumb-item"><a href="/admin/members">Members</a></li>
+      <li class="breadcrumb-item active" aria-current="page">Edit Member</li>
+    </ol>
+  </nav>
+  <div class="offset-sm-2">
+    <!-- avatar -->
+    <div class="row">
+      <div class="offset-sm-3">
+        {{if not .member.PictureURL.String}}
+        <img src="/webroot/img/avatar_empty.png" alt="can not load" class="avatar mb-2 ml-3 mt-5" id="avatar">
+        {{else}}
+          {{if .useS3}}
+          <img src="{{.member.PictureURL.String}}" alt="can not load" class="avatar mb-2 ml-3 mt-5" id="avatar">
+          {{else}}
+          <img src="/{{.member.PictureURL.String}}" alt="can not load" class="avatar mb-2 ml-3 mt-5" id="avatar">
+          {{end}}
+        {{end}}
+      </div>
+      <div class="d-flex flex-column justify-content-end ml-3">
+        <button type="button" id="upload" class="btn btn-normal mb-2">Upload</button>
+        <button type="button" id="delete-avatar" class="btn btn-normal btn-delete mb-2">Delete</button>
+      </div>
+    </div>
+    <div class="offset-sm-3 col-sm-6 mb-5">
+      {{if .validateError.photo}}
+      <div class="invalid-feedback photo-feedback">
+        {{.validateError.photo}}
+      </div>
+      {{end}}
+    </div>
+
+    <form action="/admin/members/{{.member.ID}}/edit" method="POST" enctype="multipart/form-data">
+
+      <!-- avatar -->
+      <input type="file" id="file" name="avatar" class="d-none"/>
+      <input type="text" name="check" value="1" id="check-avt" class="d-none"/>
+
+      <!-- name -->
+      <div class="form-group row">
+        <label for="name" class="col-sm-3 col-form-label">Name <span class="require">*</span></label>
+        <div class="col-sm-6">
+          <input name="name" type="text" placeholder="Your name"
+            class="form-control custom-input {{if .validateError.name}} is-invalid {{end}}" id="name"
+            value="{{.member.Name}}">
+          {{if .validateError.name}}
+          <div class="invalid-feedback">
+            {{.validateError.name}}
+          </div>
+          {{end}}
+        </div>
+      </div>
+
+      <!-- role -->
+      <div class="form-group row">
+        <label for="role" class="col-sm-3 col-form-label">Role <span class="require">*</span></label>
+        <div class="col-sm-6">
+          <select name="role" class="form-control custom-input" id="role">
+            <option value="1" {{if eq .member.RoleType 1}} selected {{end}}>normal</option>
+            <option value="2" {{if eq .member.RoleType 2}} selected {{end}}>admin</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- login ID -->
+      <div class="form-group row">
+        <label for="loginID" class="col-sm-3 col-form-label">Login ID <span class="require">*</span></label>
+        <div class="col-sm-6">
+          <input name="loginID" type="text" placeholder="Your account ID"
+            class="form-control custom-input {{if .validateError.loginID}} is-invalid {{end}}" id="loginID"
+            value="{{.member.LoginID}}">
+          {{if .validateError.loginID}}
+          <div class="invalid-feedback">
+            {{.validateError.loginID}}
+          </div>
+          {{end}}
+        </div>
+      </div>
+
+      <!-- birthday -->
+      <div class="form-group row">
+        <label for="birthday" class="col-sm-3 col-form-label">Birthday</label>
+        <div class="col-sm-6">
+          <input name="birthday" placeholder="mm-dd-yyyy" data-toggle="datepicker" class="form-control custom-input" id="birthday" autocomplete="off"
+            {{if .member.Birthday.Valid}} value='{{.member.Birthday.Time.Format "01-02-2006"}}' {{end}}>
+        </div>
+      </div>
+
+      <!-- input gender radio -->
+      <div class="form-group row">
+        <label class="col-sm-3 col-form-label">Gender Type</label>
+        <div class="col-sm-6">
+          <div class="form-check">
+            <input class="form-check-input" type="radio" name="gender" id="gender1" value="1"
+              {{if eq .member.GenderType 1}} checked {{end}}>
+            <label class="form-check-label" for="gender1">
+              Male
+            </label>
+          </div>
+          <div class="form-check">
+            <input class="form-check-input" type="radio" name="gender" id="gender2" value="2"
+              {{if eq .member.GenderType 2}} checked {{end}}>
+            <label class="form-check-label" for="gender2">
+              Female
+            </label>
+          </div>
+          <div class="form-check">
+            <input class="form-check-input" type="radio" name="gender" id="gender3" value="3"
+              {{if or .defaultGender (eq .member.GenderType 3)}} checked {{end}}>
+            <label class="form-check-label" for="gender3">
+              Other
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- company select -->
+      <div class="form-group row">
+        <label for="company" class="col-sm-3 col-form-label">Company <span class="require">*</span></label>
+        <div class="col-sm-6">
+          <select name="company" class="form-control custom-input {{if .validateError.company}} is-invalid {{end}}"
+            id="company" onchange="selectedCompany()">
+            <option value="0" {{if not .member.CompanyID}} selected {{end}} disabled>-</option>
+            {{range .companies}}
+            <option value="{{.ID}}" {{if eq $.member.CompanyID .ID}} selected {{end}}>{{.Name}}</option>
+            {{end}}
+          </select>
+          {{if .validateError.company}}
+          <div class="invalid-feedback">
+            {{.validateError.company}}
+          </div>
+          {{end}}
+        </div>
+      </div>
+
+      <!-- department -->
+      <div class="form-group row pt-3">
+        <label class="col-sm-3 col-form-label">Department</label>
+        <div class="col-sm-6">
+          <select name="department" class="form-control custom-input" id="department">
+            <option value="0" selected>-</option>
+            {{range .departments}}
+            {{if eq .CompanyID $.member.CompanyID}}
+            {{if eq .ID $.member.DepartmentID}}
+            <option class="companyID-{{.CompanyID}}" selected value="{{.ID}}">{{.Name}}</option>
+            {{else}}
+            <option class="companyID-{{.CompanyID}}" value="{{.ID}}">{{.Name}}</option>
+            {{end}}
+            {{else}}
+            <option class="companyID-{{.CompanyID}} hide-department" value="{{.ID}}">{{.Name}}</option>
+            {{end}}
+            {{end}}
+          </select>
+        </div>
+      </div>
+
+      <!-- team select -->
+      <div class="form-group row" id="team_add">
+        <label for="team" class="col-sm-3 col-form-label">Team</label>
+        {{if eq (len .teamList) 0}}
+        <div class="col-sm-6 mb-2" id="team_select">
+          <select name="team" class="form-control custom-input" id="team_input">
+            <option value="0" selected>-</option>
+            {{range $team := $.allTeams}}
+            <option value="{{$team.ID}}">{{$team.Name}}</option>
+            {{end}}
+          </select>
+        </div>
+        {{else}}
+          {{range $key, $teamSelect := .teamList}}
+            {{if eq $key 0}}
+            <div class="col-sm-6 mb-2" id="team_select">
+              <select name="team" class="form-control custom-input" id="team_input">
+                <option value="0" selected>-</option>
+                {{range $team := $.allTeams}}
+                <option value="{{$team.ID}}" {{if eq $teamSelect $team.ID}} selected {{end}}>{{$team.Name}}</option>
+                {{end}}
+              </select>
+            </div>
+            {{else}}
+            <div class="col-sm-6 offset-sm-3 mb-2" id="team_select">
+              <select name="team" class="form-control custom-input" id="team_input">
+                <option value="0" selected disabled>-</option>
+                {{range $team := $.allTeams}}
+                <option value="{{$team.ID}}" {{if eq $teamSelect $team.ID}} selected {{end}}>{{$team.Name}}</option>
+                {{end}}
+              </select>
+            </div>
+            <div class="btn btn-normal btn-delete remove-team mb-2" onclick="removeTeam($(this))">
+              <i class="fa fa-times"></i>
+            </div>
+            {{end}}
+          {{end}}
+        {{end}}
+      </div>
+      <div class="offset-sm-3">
+        <div class="btn btn-normal btn-notice ml-2 mb-3" id="add_team">Add Team</div>
+      </div>
+
+      <!-- status -->
+      <div class="form-group row">
+        <label class="col-sm-3 col-form-label">Status</label>
+        <div class="col-sm-6">
+          <select name="status" class="form-control custom-input">
+            <option value="0" {{if not .member.Status}} selected {{end}}>In</option>
+            <option value="1" {{if .member.Status}} selected {{end}}>Out</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- SNS account -->
+      <div class="form-group row">
+        <label for="githubAccount" class="col-sm-3 col-form-label">Github Account</label>
+        <div class="col-sm-6">
+          <input name="githubAccount" type="text" placeholder="https://github.com/account"
+            class="form-control custom-input" id="githubAccount" {{if .SNSAccount}} value="{{.SNSAccount}}" {{end}}>
+        </div>
+      </div>
+
+      <!-- Comment -->
+      <div class="form-group row">
+        <label for="comment" class="col-sm-3 col-form-label">Comment</label>
+        <div class="col-sm-6">
+          <textarea name="comment" placeholder="Hello world"
+            class="form-control custom-input {{if .validateError.comment}} is-invalid {{end}}" rows="10"
+            id="comment">{{.member.Comment.String}}</textarea>
+          {{if .validateError.comment}}
+          <div class="invalid-feedback">
+            {{.validateError.comment}}
+          </div>
+          {{end}}
+        </div>
+      </div>
+
+      <!-- Buttons -->
+      <div class="form-group row mt-5">
+        <div class="col-sm-2 offset-sm-2">
+          <div class="btn btn-big btn-normal" data-toggle="modal" data-target="#back_modal">Back</div>
+        </div>
+        <div class="col-sm-2 offset-sm-2">
+          <button name="save" type="submit" class="btn btn-big btn-normal">Save</button>
+        </div>
+      </div>
+
+      <!-- Modal -->
+      <div class="modal fade" id="back_modal" tabindex="-1" role="dialog" aria-labelledby="back_modal_label"
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content custom-modal">
+            <div class="modal-header modal-warning">
+              <h6 class="modal-title" id="back_modal_label">Are you sure you want to clear the input information?</h6>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body pt-5">
+              <div class="row">
+                <div class="col-sm-6">
+                  <button type="button" class="btn btn-normal btn-modal m-auto" data-dismiss="modal">Cancel</button>
+                </div>
+                <div class="col-sm-6">
+                  <a class="btn btn-normal btn-modal m-auto" href="/admin/members">OK</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+</main>
+{{end}}

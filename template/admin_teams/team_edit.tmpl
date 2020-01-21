@@ -1,0 +1,131 @@
+{{ define "content" }}
+<main role="main" class="main-content px-5 mb-5">
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb custom-title mt-3">
+      <li class="breadcrumb-item"><a href="/admin">Home</a></li>
+      <li class="breadcrumb-item"><a href="/admin/teams">Teams</a></li>
+      <li class="breadcrumb-item active" aria-current="page">Edit Team</li>
+    </ol>
+  </nav>
+  <div class="offset-sm-2">
+    <!-- Team icon -->
+    <div class="row">
+      <div class="offset-sm-3">
+        {{if not .team.PictureURL.String}}
+        <img src="/webroot/img/team_default.png" alt="can not load" class="avatar mb-2 ml-3 mt-5" id="avatar">
+        {{else}}
+          {{if .useS3}}
+          <img src="{{.team.PictureURL.String}}" alt="can not load" class="avatar mb-2 ml-3 mt-5" id="avatar">
+          {{else}}
+          <img src="/{{.team.PictureURL.String}}" alt="can not load" class="avatar mb-2 ml-3 mt-5" id="avatar">
+          {{end}}
+        {{end}}
+      </div>
+      <div class="d-flex flex-column justify-content-end ml-3">
+        <button type="button" id="upload" class="btn btn-normal mb-2">Upload</button>
+        <button type="button" id="delete-team-icon" class="btn btn-normal btn-delete mb-2">Delete</button>
+      </div>
+    </div>
+    <div class="offset-sm-3 col-sm-6 mb-5">
+      {{if .validateError.photo}}
+      <div class="invalid-feedback photo-feedback">
+        {{.validateError.photo}}
+      </div>
+      {{end}}
+    </div>
+
+    <form enctype="multipart/form-data" action="/admin/teams/{{.team.ID}}/edit" method="post">
+      <!-- Team icon input -->
+      <input type="file" id="file" name="myFile" style="display:none;" />
+      <input type="text" name="check" value="1" id="check-avt" style="display:none;" />
+
+      <!-- name -->
+      <div class="form-group row">
+        <label class="col-sm-3 col-form-label">Team Name <span class="require">*</span></label>
+        <div class="col-sm-6">
+          <input type="text" name="name" class="form-control custom-input {{if .validateError.name}} is-invalid {{end}}"
+            placeholder="Name" value="{{.team.Name}}">
+          {{if .validateError.name}}
+          <div class="invalid-feedback">
+            {{.validateError.name}}
+          </div>
+          {{end}}
+        </div>
+      </div>
+
+      <!-- leader -->
+      <div class="form-group row">
+        <label class="col-sm-3 col-form-label">Team Leader</label>
+        <div class="col-sm-6">
+          {{ if $.leader }}
+          <select name="leader" class="form-control custom-input">
+            <option value="1">_</option>
+            {{range $member := .memberList }}
+            <option value="{{$member.Member.ID}}" {{ if eq $.leader.leaderID $member.Member.ID}} selected {{end}}>
+              {{$member.Member.Name}}</option>
+            {{end}}
+          </select>
+          {{ else }}
+          <select name="leader" class="form-control custom-input">
+            <option value="1">_</option>
+            {{range $member := .memberList }}
+            <option value="{{$member.Member.ID}}">{{$member.Member.Name}}</option>
+            {{end}}
+          </select>
+          {{ end }}
+        </div>
+      </div>
+
+      <!-- description -->
+      <div class="form-group row">
+        <label class="col-sm-3 col-form-label">Description</label>
+        <div class="col-sm-6">
+          <textarea name="description"
+            class="form-control custom-input {{if .validateError.description}} is-invalid {{end}}"
+            rows="10">{{.team.Description.String}}</textarea>
+          {{if .validateError.description}}
+          <div class="invalid-feedback">
+            {{.validateError.description}}
+          </div>
+          {{end}}
+        </div>
+      </div>
+
+      <!-- button -->
+      <div class="form-group row mt-5">
+        <div class="col-sm-2 offset-sm-2">
+          <div class="btn btn-big btn-normal" data-toggle="modal" data-target="#back_modal">Back</div>
+        </div>
+        <div class="col-sm-2 offset-sm-2">
+          <button name="save" type="submit" class="btn btn-big btn-normal">Save</button>
+        </div>
+      </div>
+
+      <!-- Modal -->
+      <div class="modal fade" id="back_modal" tabindex="-1" role="dialog" aria-labelledby="back_modal_label"
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content custom-modal">
+            <div class="modal-header modal-warning">
+              <h6 class="modal-title" id="back_modal_label">Are you sure you want to clear the input information?</h6>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body pt-5">
+              <div class="row">
+                <div class="col-sm-6">
+                  <button type="button" class="btn btn-normal btn-modal m-auto" data-dismiss="modal">Cancel</button>
+                </div>
+                <div class="col-sm-6">
+                  <a class="btn btn-normal btn-modal m-auto" href="/admin/teams">OK</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+</main>
+{{ end }}

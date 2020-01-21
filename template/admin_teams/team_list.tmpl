@@ -1,0 +1,46 @@
+{{define "content"}}
+<main role="main" class="main-content px-5 mb-5">
+  <!-- Breadcrumb -->
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb custom-title mt-3 mb-0">
+      <li class="breadcrumb-item"><a href="/admin">Home</a></li>
+      <li class="breadcrumb-item active" aria-current="page">Teams</li>
+    </ol>
+  </nav>
+  <!-- Create button -->
+  <div class="d-flex justify-content-end">
+    <div class="btn-toolbar">
+      <a class="btn btn-big btn-normal mt-0" href="/admin/teams/add">
+        Create new team
+      </a>
+    </div>
+  </div>
+  <!-- Table -->
+  <div class="card custom-card card-table mt-3">
+    <div class="card-body">
+      <div class="table-responsive">
+        <table id="myTable" class="table list table-striped table-bordered">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Name</th>
+              <th>Created</th>
+              <th>Modified</th>
+            </tr>
+          </thead>
+          <tbody>
+            {{range .list.List}}
+            <tr>
+              <td>{{.ID}}</td>
+              <td><a href="/admin/teams/{{.ID}}">{{.Name}}</a></td>
+              <td>{{.Created.Format "2006-01-02 15:04:05"}}</td>
+              <td>{{.Modified.Format "2006-01-02 15:04:05"}}</td>
+            </tr>
+            {{end}}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</main>
+{{end}}

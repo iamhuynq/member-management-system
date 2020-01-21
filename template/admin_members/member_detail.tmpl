@@ -1,0 +1,186 @@
+{{define "content"}}
+<main role="main" class="main-content px-5 mb-5">
+  <!-- Breadcrumb -->
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb custom-title mt-3">
+      <li class="breadcrumb-item"><a href="/admin">Home</a></li>
+      <li class="breadcrumb-item"><a href="/admin/members">Members</a></li>
+      <li class="breadcrumb-item active" aria-current="page">Member Detail</li>
+    </ol>
+  </nav>
+
+  <!-- Delete button -->
+  <div class="d-flex justify-content-end">
+    <div class="btn-toolbar">
+      <a class="btn btn-normal btn-delete mt-0" href="/admin/members/{{.member.ID}}/delete" data-toggle="modal" data-target="#deleteModal">
+        Detele
+      </a>
+    </div>
+    <div class="col-md-2"></div>
+  </div>
+
+  <div class="offset-sm-2">
+    <!-- avatar -->
+    <div class="row">
+      <div class="offset-sm-3">
+        {{if not .member.PictureURL.String}}
+        <img src="/webroot/img/avatar_empty.png" alt="can not load" class="avatar mb-2 ml-3 mt-5" id="avatar">
+        {{else}}
+          {{if .useS3}}
+          <img src="{{.member.PictureURL.String}}" class="ml-3 avatar" alt="user_photo">
+          {{else}}
+          <img src="/{{.member.PictureURL.String}}" class="ml-3 avatar" alt="user_photo">
+          {{end}}
+        {{end}}
+      </div>
+    </div>
+    <div class="offset-sm-3 col-sm-6 mb-5"></div>
+    <!-- name -->
+    <div class="row mb-3">
+      <label class="col-sm-3 col-form-label">Name</label>
+      <div class="col-sm-6">
+        <a>{{.member.Name}}</a>
+      </div>
+    </div>
+    <!-- role -->
+    <div class="row mb-3">
+      <label class="col-sm-3 col-form-label">Role</label>
+      <div class="col-sm-6">
+        <a>
+          {{if eq .member.RoleType 1}} normal {{end}}
+          {{if eq .member.RoleType 2}} admin {{end}}
+        </a>
+      </div>
+    </div>
+    <!-- login ID -->
+    <div class="row mb-3">
+      <label class="col-sm-3 col-form-label">Login ID</label>
+      <div class="col-sm-6">
+        <a>{{.member.LoginID}}</a>
+      </div>
+    </div>
+    <!-- reset password -->
+    <div class="row mb-3">
+      <label class="col-sm-3 col-form-label">Password</label>
+      <div class="col-sm-6">
+        <a class="btn btn-normal" href="/admin/members/{{.member.ID}}/reset_password">Reset Password</a>
+      </div>
+    </div>
+    <!-- birthday -->
+    <div class="row mb-3">
+      <label class="col-sm-3 col-form-label">Birthday</label>
+      <div class="col-sm-6">
+        {{if .member.Birthday.Valid}}
+          <a>{{.member.Birthday.Time.Format "01-02-2006" }}</a>
+        {{else}}
+          <a>_</a>
+        {{end}}
+      </div>
+    </div>
+    <!-- gender -->
+    <div class="row mb-3">
+      <label class="col-sm-3 col-form-label">Gender Type</label>
+      {{if eq .member.GenderType 1}}
+      <div class="col-sm-6">
+        <a>Male</a>
+      </div>
+      {{else}}{{if eq .member.GenderType 2}}
+      <div class="col-sm-6">
+        <a>Female</a>
+      </div>
+      {{else}}
+      <div class="col-sm-6">
+        <a>Other</a>
+      </div>
+      {{end}}{{end}}
+    </div>
+    <!-- company -->
+    <div class="row mb-3">
+      <label class="col-sm-3 col-form-label">Company</label>
+      <div class="col-sm-6">
+        <a>{{.company}}</a>
+      </div>
+    </div>
+    <!-- department -->
+    <div class="row mb-3">
+      <label class="col-sm-3 col-form-label">Department</label>
+      <div class="col-sm-6">
+        <a>{{.department}}</a>
+      </div>
+    </div>
+    <!-- team -->
+    <div class="row mb-3">
+      <label class="col-sm-3 col-form-label">Team</label>
+      <div class="col-sm-6 team-list">
+        {{if eq (len .teamList) 0}}
+          <a>_</a>
+        {{else}}
+          {{range $key, $team := .teamList}}
+            <a>{{$team}}</a>
+          {{end}}
+        {{end}}
+      </div>
+    </div>
+    <!-- status -->
+    <div class="row mb-3">
+      <label class="col-sm-3 col-form-label">Status</label>
+      <div class="col-sm-6">
+        <a>{{ if .member.Status}}Out{{else}}In{{end}}</a>
+      </div>
+    </div>
+    <!-- github -->
+    <div class="row mb-3">
+      <label class="col-sm-3 col-form-label">Github</label>
+      <div class="col-sm-6">
+        {{if .SNSAccount}}
+        <a href="{{.SNSAccount.Github}}" target="_blank"><i>{{.SNSAccount.Github}}</i></a>
+        {{end}}
+      </div>
+    </div>
+    <!-- comment -->
+    <div class="row mb-3">
+      <label for="comment" class="col-sm-3 col-form-label">Comment</label>
+      <div class="col-sm-6">
+        <textarea name="comment" class="form-control custom-input" rows="10"
+          id="comment" readonly>{{.member.Comment.String}}</textarea>
+      </div>
+    </div>
+    <!-- buttons -->
+    <div class="form-group row mt-5">
+      <div class="col-sm-2 offset-sm-2">
+        <a class="btn btn-big btn-normal" href="/admin/members">Back</a>
+      </div>
+      <div class="col-sm-2 offset-sm-2">
+        <a class="btn btn-big btn-normal" href="/admin/members/{{.member.ID}}/edit">Edit</a>
+      </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="delete_modal_label"
+      aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content custom-modal">
+          <div class="modal-header modal-warning">
+            <h6 class="modal-title" id="delete_modal_label">Are you sure want to delete member {{.member.Name}}?</h6>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body pt-5">
+            <div class="row">
+              <div class="col-sm-6">
+                <button type="button" class="btn btn-normal btn-modal m-auto" data-dismiss="modal">Cancel</button>
+              </div>
+              <div class="col-sm-6">
+                <form action="/admin/members/{{.member.ID}}/delete" method="POST">
+                  <button class="btn btn-normal btn-modal m-auto" type="submit" formmethod="POST">OK</button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+{{end}}

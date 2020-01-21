@@ -1,0 +1,106 @@
+{{define "content"}}
+<main role="main" class="main-content px-5 mb-5">
+  <!-- breadcrumb -->
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb custom-title mt-3">
+      <li class="breadcrumb-item"><a href="/admin">Home</a></li>
+      <li class="breadcrumb-item"><a href="/admin/members">Seats</a></li>
+      <li class="breadcrumb-item active" aria-current="page">Edit Seat</li>
+    </ol>
+  </nav>
+  <!-- Form -->
+  <div class="pl-3">
+    <div id="check_page" data-id="{{.seatMaster.ID}}" data-page="edit"></div>
+    <!-- Seat title -->
+    <div class="form-group row">
+      <label class="col-sm-2 col-form-label">Title</label>
+      <input type="text" placeholder="Seats title" class="form-control custom-input col-sm-2" id="input_title"
+        value="{{.seatMaster.Title}}">
+    </div>
+    <!-- Company -->
+    <div class="form-group row">
+      <label class="col-sm-2 col-form-label">Company</label>
+      <select class="form-control custom-input col-sm-2" id="select_company">
+        {{range .companyList}}
+        <option value="{{.ID}}" {{if eq .ID $.seatMaster.CompanyID}} selected {{end}}>{{.Name}}</option>
+        {{end}}
+      </select>
+    </div>
+    <!-- Status -->
+    <div class="form-group row">
+      <label class="col-sm-2 col-form-label">Status</label>
+      <select id="door_status" class="form-control custom-input col-sm-2">
+        <option value="1" {{if .seatMaster.Status}} selected {{end}}>Active</option>
+        <option value="0" {{if not .seatMaster.Status}} selected {{end}}>Inactive</option>
+      </select>
+    </div>
+    <!-- Seat Object -->
+    <div class="form-group row">
+      <label class="col-sm-2 col-form-label">Seat</label>
+      <input type="number" class="d-none" id="number_col" value="1">
+      <input type="number" class="d-none" id="number_row" value="1">
+      <div class="col-sm-2 mr-2 size-select">
+        <input type="text" readonly value="1 x 1" class="form-control custom-input grid-chooser" />
+      </div>
+      <button class="btn btn-normal col-sm-2" id="seat_add">Add Seat</button>
+      <button class="btn btn-normal col-sm-2 d-none" id="seat_update">Update seat</button>
+    </div>
+    <!-- Other object -->
+    <div class="form-group row">
+      <label class="col-sm-2 col-form-label">Object</label>
+      <input type="text" placeholder="Object name" class="form-control custom-input col-sm-2 mr-2" id="input_obj" />
+      <button class="btn btn-normal col-sm-2" id="obj_add">Add Object</button>
+      <button class="btn btn-normal col-sm-2 d-none" id="obj_update">Update object</button>
+    </div>
+    <!-- Door object -->
+    <div class="form-group row">
+      <label class="col-sm-2 col-form-label">Door</label>
+      <select id="door_input" class="form-control custom-input col-sm-2">
+        <option value="t">Top</option>
+        <option value="r">Right</option>
+        <option value="b">Bottom</option>
+        <option value="l">Left</option>
+      </select>
+      <button class="btn btn-normal ml-2 col-sm-2" id="door_add">Add Door</button>
+    </div>
+    <!-- Room design -->
+    <div id="outside_room_design" class="outside_edit">
+      <div id="room_design">
+      </div>
+    </div>
+    <!-- Button -->
+    <div class="offset-sm-2 form-group row mt-5">
+      <div class="col-sm-2 offset-sm-2">
+        <div class="btn btn-big btn-normal" data-toggle="modal" data-target="#back_modal">Back</div>
+      </div>
+      <div class="col-sm-2 offset-sm-2">
+        <button name="save" id="btn_edit_seat" class="btn btn-big btn-normal">Save</button>
+      </div>
+    </div>
+    <!-- Modal -->
+    <div class="modal fade" id="back_modal" tabindex="-1" role="dialog" aria-labelledby="back_modal_label"
+      aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content custom-modal">
+          <div class="modal-header modal-warning">
+            <h6 class="modal-title" id="back_modal_label">Are you sure you want to clear the input information?</h6>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body pt-5">
+            <div class="row">
+              <div class="col-sm-6">
+                <button type="button" class="btn btn-normal btn-modal m-auto" data-dismiss="modal">Cancel</button>
+              </div>
+              <div class="col-sm-6">
+                <a class="btn btn-normal btn-modal m-auto" href="/admin/seats">OK</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+{{end}}

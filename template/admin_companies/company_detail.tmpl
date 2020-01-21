@@ -1,0 +1,67 @@
+{{define "content"}}
+<main role="main" class="main-content px-5 mb-5">
+  <!-- Breadcrumb -->
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb custom-title mt-3">
+      <li class="breadcrumb-item"><a href="/admin">Home</a></li>
+      <li class="breadcrumb-item"><a href="/admin/companies">Companies</a></li>
+      <li class="breadcrumb-item active" aria-current="page">Company Detail</li>
+    </ol>
+  </nav>
+
+  <div class="offset-sm-2 long-height">
+    <!-- name -->
+    <div class="offset-sm-3 col-sm-6 mb-5"></div>
+    <div class="row mb-3">
+      <label class="col-sm-3 col-form-label">Name</label>
+      <div class="col-sm-6">
+        <label>{{.company.Name}}</label>
+      </div>
+    </div>
+    <!-- color -->
+    <div class="row mb-3">
+      <label class="col-sm-3 col-form-label">Color</label>
+      <div class="row col-sm-6 ml-0 d-flex justify-content-between">
+        <label>{{.company.Color}}</label>
+        <div class="color-box mr-2" style="background-color: {{.company.Color}};"></div>
+      </div>
+    </div>
+    <!-- departments -->
+    <div class="row mb-3">
+      <label class="col-sm-3 col-form-label">Departments</label>
+      <div class="col-sm-6">
+        <table class="w-100 table-sm company-table" border="1">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Color</th>
+            </tr>
+          </thead>
+          <tbody>
+            {{range .departmentList}}
+            <tr>
+              <td>{{.Name}}</td>
+              <td>
+                <div class="row department-color d-flex justify-content-between">
+                  <div>{{.Color}}</div>
+                  <div class="color-box" style="background-color: {{.Color}};"></div>
+                </div>
+              </td>
+            </tr>
+            {{end}}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+    <!-- button -->
+    <div class="offset-sm-2 form-group row mt-5">
+      <div class="col-sm-2 offset-sm-2">
+        <a class="btn btn-big btn-normal" href="/admin/companies">Back</a>
+      </div>
+      <div class="col-sm-2 offset-sm-2">
+        <a class="btn btn-big btn-normal" href="/admin/companies/{{.company.ID}}/edit">Edit</a>
+      </div>
+    </div>
+</main>
+{{end}}
